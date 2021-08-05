@@ -1,4 +1,4 @@
-package com.highcom.ponshu.ui.dashboard;
+package com.highcom.ponshu.ui.timeline;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,20 +12,19 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.highcom.ponshu.R;
-import com.highcom.ponshu.databinding.FragmentDashboardBinding;
+import com.highcom.ponshu.databinding.FragmentTimelineBinding;
 
-public class DashboardFragment extends Fragment {
+public class TimelineFragment extends Fragment {
 
-    private DashboardViewModel dashboardViewModel;
-    private FragmentDashboardBinding binding;
+    private TimelineViewModel dashboardViewModel;
+    private FragmentTimelineBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         dashboardViewModel =
-                new ViewModelProvider(this).get(DashboardViewModel.class);
+                new ViewModelProvider(this).get(TimelineViewModel.class);
 
-        binding = FragmentDashboardBinding.inflate(inflater, container, false);
+        binding = FragmentTimelineBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         final TextView textView = binding.textDashboard;
