@@ -440,20 +440,20 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="45dp"
-                        android:id="@+id/detail_flavor_title"
+                        android:id="@+id/detail_aroma_title"
                         android:gravity="center_vertical"
                         android:text="香り" />
 
                     <Spinner
                         android:layout_width="wrap_content"
                         android:layout_height="45dp"
-                        android:id="@+id/detail_flavor" />
+                        android:id="@+id/detail_aroma" />
                 </LinearLayout>
 
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/detail_flavor_register"
+                    android:id="@+id/detail_aroma_register"
                     android:text="登録" />
 
             </LinearLayout>

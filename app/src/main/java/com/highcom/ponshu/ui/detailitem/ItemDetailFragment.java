@@ -4,10 +4,14 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
@@ -33,11 +37,18 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.highcom.ponshu.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, View.OnClickListener {
 
@@ -46,6 +57,9 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
     private TextView mInputDateTextView;
     private SimpleDateFormat mSdf;
     private Date mSelectDate;
+
+    private FirebaseFirestore mDb;
+    private ArrayList<Entry> mAromaEntryList;
 
     @SuppressLint("SimpleDateFormat")
     @Nullable
@@ -58,11 +72,85 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         RadarChartInit(view);
         LineChartInit(view);
 
+        mAromaEntryList = new ArrayList<>();
         mSdf = new SimpleDateFormat("yyyy/MM/dd");
         mSelectDate = new Date();
+
         mInputDateTextView = view.findViewById(R.id.detail_input_date);
         mInputDateTextView.setText(mSdf.format(mSelectDate));
         mInputDateTextView.setOnClickListener(this);
+
+        mDb = FirebaseFirestore.getInstance();
+        DocumentReference documentReference = mDb.collection("AromaProgress").document("aramasa");
+        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists()) {
+                    ArrayList<Long> elapsedDayList = (ArrayList) documentSnapshot.get("elapsedDay");
+                    ArrayList<Long> aromaList = (ArrayList) documentSnapshot.get("aroma");
+                    if (elapsedDayList == null || aromaList == null) return;
+                    for (int i = 0; i < elapsedDayList.size() && i < aromaList.size(); i++) {
+                        Long x = elapsedDayList.get(i);
+                        Long y = aromaList.get(i);
+                        mAromaEntryList.add(new Entry((float)x, (float)y, new Date()));
+                    }
+                    if (mAromaEntryList.size() > 0) {
+                        setLineData(mAromaEntryList);
+                        LineChartInit(view);
+                    }
+                }
+            }
+        });
+
+        Spinner aromaSpinner = view.findViewById(R.id.detail_aroma);
+        ArrayAdapter<String> aromaAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+        aromaAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        for (Integer i = 1; i <= 10; i++) aromaAdapter.add(i.toString());
+        aromaSpinner.setAdapter(aromaAdapter);
+
+        Button registAromaButton = view.findViewById(R.id.detail_aroma_register);
+        registAromaButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                float x;
+                if (mAromaEntryList.size() > 0) {
+                    long baseX = ((Date)mAromaEntryList.get(0).getData()).getTime() / (1000 * 60 * 60 * 24);
+                    long currentX = mSelectDate.getTime() / (1000 * 60 * 60 * 24);
+                    x = currentX - baseX;
+                } else {
+                    x = 0;
+                }
+                float y = Float.parseFloat(aromaSpinner.getSelectedItem().toString());
+                mAromaEntryList.add(new Entry(x, y, mSelectDate));
+                Map<String, Object> elapsedDayData = new HashMap<>();
+                for (Entry entry : mAromaEntryList) {
+                    elapsedDayData.put("elapsedDay", (long) entry.getX());
+                }
+                documentReference.set(elapsedDayData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Map<String, Object> aromaData = new HashMap<>();
+                        for (Entry entry : mAromaEntryList) {
+                            elapsedDayData.put("aroma", (long) entry.getY());
+                        }
+                        Log.d("DATABASE", "documentSet:success");
+                        documentReference.set(aromaData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                setLineData(mAromaEntryList);
+//                              mLineChart.invalidate();
+                                LineChartInit(view);
+                            }
+                        });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("DATABASE", "documentSet:failure");
+                    }
+                });
+            }
+        });
 
         return view;
     }
@@ -176,7 +264,7 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         // don't forget to refresh the drawing
         mLineChart.invalidate();
 
-        setLineData(null);
+//        setLineData();
     }
 
     private void setRadarData() {
@@ -220,19 +308,19 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         mRadarChart.invalidate();
     }
 
-    private void setLineData(ArrayList<Entry> values_) {
+    private void setLineData(ArrayList<Entry> values) {
 
-        ArrayList<Entry> values = new ArrayList<>();
+//        ArrayList<Entry> values = new ArrayList<>();
 
 //        for (int i = 0; i < count; i++) {
 //            float val = (float) (Math.random() * (range + 1)) + 20;
 //            values.add(new Entry(i, val));
 //        }
-        values.add(new Entry(0, 10));
-        values.add(new Entry(1, 6));
-        values.add(new Entry(2, 4));
-        values.add(new Entry(3, 2));
-        values.add(new Entry(4, 1));
+//        values.add(new Entry(0, 10));
+//        values.add(new Entry(1, 6));
+//        values.add(new Entry(2, 4));
+//        values.add(new Entry(3, 2));
+//        values.add(new Entry(4, 1));
 
         LineDataSet set1;
 
