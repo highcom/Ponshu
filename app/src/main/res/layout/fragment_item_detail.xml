@@ -287,6 +287,184 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/offwhite"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:id="@+id/detail_sweetness_title"
+                        android:gravity="center_vertical"
+                        android:text="甘味" />
+
+                    <Spinner
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:id="@+id/detail_sweetness" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:id="@+id/detail_sourness_title"
+                        android:gravity="center_vertical"
+                        android:text="酸味" />
+
+                    <Spinner
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:id="@+id/detail_sourness" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:id="@+id/detail_pungent_title"
+                        android:gravity="center_vertical"
+                        android:text="辛味" />
+
+                    <Spinner
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:id="@+id/detail_pungent" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:id="@+id/detail_bitterness_title"
+                        android:gravity="center_vertical"
+                        android:text="苦味" />
+
+                    <Spinner
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:id="@+id/detail_bitterness" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:id="@+id/detail_astringent_title"
+                        android:gravity="center_vertical"
+                        android:text="苦味" />
+
+                    <Spinner
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:id="@+id/detail_astringent" />
+                </LinearLayout>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/detail_taste_register"
+                    android:text="登録" />
+
+            </LinearLayout>
+
+            <com.github.mikephil.charting.charts.RadarChart
+                android:id="@+id/radar_chart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginLeft="10dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/offwhite"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:id="@+id/detail_input_date"
+                    android:gravity="center_vertical"
+                    android:text="2021/01/01" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:id="@+id/detail_flavor_title"
+                        android:gravity="center_vertical"
+                        android:text="香り" />
+
+                    <Spinner
+                        android:layout_width="wrap_content"
+                        android:layout_height="45dp"
+                        android:id="@+id/detail_flavor" />
+                </LinearLayout>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/detail_flavor_register"
+                    android:text="登録" />
+
+            </LinearLayout>
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/line_chart"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginLeft="10dp" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>
