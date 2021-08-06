@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cream"
+    tools:context=".ui.detailitem.ItemDetailFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/detail_title"
+            android:text="日本酒"
+            android:textSize="24dp"
+            android:background="@color/offwhite"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:id="@+id/detail_subtitle"
+            android:text="サブ銘柄名"
+            android:textSize="12dp"
+            android:background="@color/offwhite"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/detail_image"
+            android:src="@drawable/ic_ponshu"
+            android:background="@color/offwhite"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/offwhite"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_specific_name_title"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="特定名称"
+                android:textSize="14dp" />
+
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_specific_name"
+                android:layout_weight="2" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/offwhite"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_polishing_rate_title"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="精米歩合(%)"
+                android:textSize="14dp" />
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_polishing_rate"
+                android:layout_weight="2"
+                android:text="60"
+                android:inputType="number"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/offwhite"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_sake_shop_title"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="酒舗"
+                android:textSize="14dp" />
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_sake_shop"
+                android:layout_weight="2"
+                android:text="酒蔵名"
+                android:inputType="text"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/offwhite"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_origin_title"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="産地"
+                android:textSize="14dp" />
+
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_origin"
+                android:layout_weight="2" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/offwhite"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_manufacturing_title"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="製法"
+                android:textSize="14dp" />
+
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_manufacturing"
+                android:layout_weight="2" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/offwhite"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_raw_material_title"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="原材料"
+                android:textSize="14dp" />
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_raw_material"
+                android:layout_weight="2"
+                android:text="米名称"
+                android:inputType="text"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/offwhite"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_capacity_title"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="内容量(ml)"
+                android:textSize="14dp" />
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_capacity"
+                android:layout_weight="2"
+                android:text="720"
+                android:inputType="number"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/offwhite"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_storage_temparture_title"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="保管温度(℃)"
+                android:textSize="14dp" />
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_storage_temparture"
+                android:layout_weight="2"
+                android:text="14"
+                android:inputType="number"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/offwhite"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_how_to_drink_title"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="飲み方"
+                android:textSize="14dp" />
+
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:id="@+id/detail_how_to_drink"
+                android:layout_weight="2" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
