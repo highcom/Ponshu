@@ -6,18 +6,22 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.highcom.ponshu.databinding.ActivityMainBinding;
+import com.highcom.ponshu.ui.searchlist.SearchListFragment;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -38,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private SearchView mSearchView;
     private List<String> mBrandsList;
+    private SearchListFragment mSearchListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             //okhttpを利用するカスタム関数（下記）
             httpRequest("https://muro.sakenowa.com/sakenowa-data/api/brands");
         }catch(Exception e){
-            Log.e("Hoge",e.getMessage());
+            Log.e("Sakenowa err",e.getMessage());
         }
     }
 
@@ -72,11 +77,30 @@ public class MainActivity extends AppCompatActivity {
         // 検索バーの追加
         getMenuInflater().inflate(R.menu.search_menu, menu);
 
-        // 文字色、サイズの変更とプレースホルダーセット(任意)
-//        SearchView.SearchAutoComplete searchAutoComplete = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
-//        searchAutoComplete.setHintTextColor(Color.rgb(0xff, 0xff, 0xff));
+        MenuItem menuItem = menu.findItem(R.id.search_menu_search_view);
+        mSearchView = (SearchView)menuItem.getActionView();
+        SearchView.SearchAutoComplete searchAutoComplete = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        searchAutoComplete.setHintTextColor(Color.rgb(0xff, 0xff, 0xff));
 //        searchAutoComplete.setTextSize(25);
-//        searchAutoComplete.setHint("検索キーワード");
+        searchAutoComplete.setHint("検索キーワード");
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (mSearchListFragment == null) {
+                    mSearchListFragment = new SearchListFragment(mBrandsList);
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.container, mSearchListFragment);
+                    fragmentTransaction.commit();
+                }
+                return false;
+            }
+        });
 
         return true;
     }
