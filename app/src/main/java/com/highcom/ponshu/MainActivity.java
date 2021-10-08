@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             //okhttpを利用するカスタム関数（下記）
             httpRequest("https://muro.sakenowa.com/sakenowa-data/api/brands");
         }catch(Exception e){
-            Log.e("Sakenowa err",e.getMessage());
+            Log.e("HTTPERR",e.getMessage());
         }
     }
 
@@ -95,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
                     mSearchListFragment = new SearchListFragment(mBrandsList);
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.container, mSearchListFragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.replace(R.id.mainContainer, mSearchListFragment);
                     fragmentTransaction.commit();
                 }
                 return false;
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                     //エラーのとき
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                        Log.e("Hoge",e.getMessage());
+                        Log.e("HTTPERR",e.getMessage());
                     }
 
                     //正常のとき
@@ -131,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
 
                         //response取り出し
                         final String jsonStr = response.body().string();
-                        Log.d("Hoge","jsonStr=" + jsonStr);
 
                         //JSON処理
                         try{
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                         }catch(Exception e){
-                            Log.e("Hoge",e.getMessage());
+                            Log.e("HTTPERR",e.getMessage());
                         }
 
                     }
