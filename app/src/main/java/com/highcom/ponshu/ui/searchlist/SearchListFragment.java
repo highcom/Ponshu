@@ -10,16 +10,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ListView;
 
 import com.highcom.ponshu.R;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class SearchListFragment extends Fragment {
+public class SearchListFragment extends Fragment implements Filterable {
+    private ListView mListView;
+    private ArrayAdapter<String> mArrayAdapter;
     private List<String> mBrandsList;
+    private List<String> orig;
     public SearchListFragment(List<String> brandsList) {
         mBrandsList = brandsList;
     }
@@ -34,10 +40,45 @@ public class SearchListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ListView listView = getActivity().findViewById(R.id.search_list_view);
+        mListView = getActivity().findViewById(R.id.search_list_view);
         if (mBrandsList != null) {
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, mBrandsList);
-            listView.setAdapter(arrayAdapter);
+            mArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, mBrandsList);
+            mListView.setAdapter(mArrayAdapter);
         }
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                final FilterResults oReturn = new FilterResults();
+                final List<String> results = new ArrayList<>();
+                if (orig == null)
+                    orig = mBrandsList;
+                if (constraint != null) {
+                    if (orig != null && orig.size() > 0) {
+                        for (final String g : orig) {
+                            if (g.toLowerCase().contains(constraint.toString()))
+                                results.add(g);
+                        }
+                    }
+                    oReturn.values = results;
+                } else {
+                    oReturn.values = orig;
+                }
+                return oReturn;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void publishResults(CharSequence constraint,
+                                          FilterResults results) {
+                mBrandsList = (ArrayList<String>) results.values;
+                mArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, mBrandsList);
+                mListView.setAdapter(mArrayAdapter);
+            }
+        };
     }
 }

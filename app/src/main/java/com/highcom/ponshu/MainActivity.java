@@ -4,9 +4,12 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -81,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
         mSearchView = (SearchView)menuItem.getActionView();
         SearchView.SearchAutoComplete searchAutoComplete = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
         searchAutoComplete.setHintTextColor(Color.rgb(0xff, 0xff, 0xff));
-//        searchAutoComplete.setTextSize(25);
         searchAutoComplete.setHint("検索キーワード");
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -93,14 +95,17 @@ public class MainActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 if (mSearchListFragment == null) {
                     mSearchListFragment = new SearchListFragment(mBrandsList);
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.replace(R.id.mainContainer, mSearchListFragment);
-                    fragmentTransaction.commit();
+                    getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
                 }
+                setSearchWordFilter(newText);
                 return false;
             }
+        });
+
+        mSearchView.setOnCloseListener(() -> {
+            getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
+            mSearchListFragment = null;
+            return false;
         });
 
         return true;
@@ -161,5 +166,14 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    public void setSearchWordFilter(String searchWord) {
+        Filter filter = mSearchListFragment.getFilter();
+        if (TextUtils.isEmpty(searchWord)) {
+            filter.filter(null);
+        } else {
+            filter.filter(searchWord);
+        }
     }
 }
