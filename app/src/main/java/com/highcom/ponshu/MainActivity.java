@@ -9,15 +9,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -40,7 +37,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchListFragment.SearchListFragmentListener {
 
     private ActivityMainBinding binding;
     private SearchView mSearchView;
@@ -85,22 +82,7 @@ public class MainActivity extends AppCompatActivity {
         SearchView.SearchAutoComplete searchAutoComplete = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
         searchAutoComplete.setHintTextColor(Color.rgb(0xff, 0xff, 0xff));
         searchAutoComplete.setHint("検索キーワード");
-        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if (mSearchListFragment == null) {
-                    mSearchListFragment = new SearchListFragment(mBrandsList);
-                    getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
-                }
-                setSearchWordFilter(newText);
-                return false;
-            }
-        });
+        mSearchView.setOnQueryTextListener(this);
 
         mSearchView.setOnCloseListener(() -> {
             getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
@@ -175,5 +157,25 @@ public class MainActivity extends AppCompatActivity {
         } else {
             filter.filter(searchWord);
         }
+    }
+
+    @Override
+    public void onAdapterClicked(String name) {
+        mSearchView.setQuery(name, true);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        if (mSearchListFragment == null) {
+            mSearchListFragment = new SearchListFragment(mBrandsList, this);
+            getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
+        }
+        setSearchWordFilter(newText);
+        return false;
     }
 }
