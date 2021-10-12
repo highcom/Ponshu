@@ -7,9 +7,29 @@
     android:background="@color/cream"
     tools:context=".ui.searchlist.SearchListFragment">
 
-    <ListView
-        android:id="@+id/search_list_view"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:ignore="MissingConstraints">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/detail_edit_title"
+            android:text="日本酒"
+            android:textSize="24dp"
+            android:background="@color/offwhite"
+            android:visibility="gone"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" />
+
+        <ListView
+            android:id="@+id/search_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

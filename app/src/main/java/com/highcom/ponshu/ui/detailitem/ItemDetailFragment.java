@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -43,6 +44,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.highcom.ponshu.R;
+import com.highcom.ponshu.ui.searchlist.SearchListFragment;
+import com.highcom.ponshu.util.SakenowaDataCollector;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,8 +53,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, View.OnClickListener {
+public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, SearchListFragment.SearchListFragmentListener, View.OnClickListener {
 
+    private EditText mTitle;
+    private SearchListFragment mSearchListFragment;
     private RadarChart mRadarChart;
     private LineChart mLineChart;
     private TextView mInputDateTextView;
@@ -69,8 +74,19 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_item_detail, container, false);
+
         RadarChartInit(view);
         LineChartInit(view);
+
+        mTitle = view.findViewById(R.id.detail_title);
+        mSearchListFragment = new SearchListFragment(SakenowaDataCollector.getInstance().getBrandsList(), mTitle.getText().toString(), true, this);
+        mTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSearchListFragment.setTitle(mTitle.getText().toString());
+                getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
+            }
+        });
 
         mAromaEntryList = new ArrayList<>();
         mSdf = new SimpleDateFormat("yyyy/MM/dd");
@@ -153,6 +169,12 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         });
 
         return view;
+    }
+
+    @Override
+    public void onAdapterClicked(String name) {
+        getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
+        mTitle.setText(name);
     }
 
     @Override

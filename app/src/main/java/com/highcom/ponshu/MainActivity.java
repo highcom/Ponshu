@@ -22,6 +22,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.highcom.ponshu.databinding.ActivityMainBinding;
 import com.highcom.ponshu.ui.searchlist.SearchListFragment;
+import com.highcom.ponshu.util.SakenowaDataCollector;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -31,17 +32,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchListFragment.SearchListFragmentListener {
 
     private ActivityMainBinding binding;
+    private SakenowaDataCollector mCollector;
     private SearchView mSearchView;
-    private List<String> mBrandsList;
     private SearchListFragment mSearchListFragment;
 
     @Override
@@ -50,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        mCollector = SakenowaDataCollector.getInstance();
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -60,14 +57,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
-
-        //httpリクエスト
-        try{
-            //okhttpを利用するカスタム関数（下記）
-            httpRequest("https://muro.sakenowa.com/sakenowa-data/api/brands");
-        }catch(Exception e){
-            Log.e("HTTPERR",e.getMessage());
-        }
     }
 
     @Override
@@ -93,63 +82,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         return true;
     }
 
-    void httpRequest(String url) throws IOException {
-
-        //OkHttpClinet生成
-        OkHttpClient client = new OkHttpClient();
-
-        //request生成
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        //非同期リクエスト
-        client.newCall(request)
-                .enqueue(new Callback() {
-
-                    //エラーのとき
-                    @Override
-                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                        Log.e("HTTPERR",e.getMessage());
-                    }
-
-                    //正常のとき
-                    @Override
-                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
-                        //response取り出し
-                        final String jsonStr = response.body().string();
-
-                        //JSON処理
-                        try{
-                            //jsonパース
-                            JSONObject json = new JSONObject(jsonStr);
-                            JSONArray brandsArray = json.getJSONArray("brands");
-                            mBrandsList = new ArrayList<>();
-                            for (int i = 0; i < brandsArray.length(); i++) {
-                                mBrandsList.add(brandsArray.getJSONObject(i).get("name").toString());
-                            }
-
-                            //親スレッドUI更新
-                            Handler mainHandler = new Handler(Looper.getMainLooper());
-                            mainHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    // TODO:ここにListViewに設定する処理を追加
-//                                    textView.setText(finalBrandsList);
-                                    Toast.makeText(MainActivity.this, "データ取得完了", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-
-
-                        }catch(Exception e){
-                            Log.e("HTTPERR",e.getMessage());
-                        }
-
-                    }
-                });
-    }
-
     public void setSearchWordFilter(String searchWord) {
         Filter filter = mSearchListFragment.getFilter();
         if (TextUtils.isEmpty(searchWord)) {
@@ -172,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public boolean onQueryTextChange(String newText) {
         if (mSearchListFragment == null) {
-            mSearchListFragment = new SearchListFragment(mBrandsList, this);
+            mSearchListFragment = new SearchListFragment(mCollector.getBrandsList(), this);
             getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
         }
         setSearchWordFilter(newText);
