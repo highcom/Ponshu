@@ -43,6 +43,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.highcom.ponshu.MainActivity;
 import com.highcom.ponshu.R;
 import com.highcom.ponshu.ui.searchlist.SearchListFragment;
 import com.highcom.ponshu.util.SakenowaDataCollector;
@@ -74,6 +75,9 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_item_detail, container, false);
+
+        ((MainActivity)getActivity()).setMenuType(MainActivity.MENU_TYPE.EDIT_TITLE);
+        getActivity().getFragmentManager().invalidateOptionsMenu();
 
         RadarChartInit(view);
         LineChartInit(view);

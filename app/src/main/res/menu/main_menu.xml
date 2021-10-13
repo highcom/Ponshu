@@ -2,8 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/search_menu_search_view"
+        android:id="@+id/menu_search_view"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always"
+        android:visible="true"
         android:title="Search Bar" />
+    <item
+        android:id="@+id/menu_done_button"
+        android:icon="@drawable/ic_baseline_check_24"
+        app:showAsAction="always"
+        android:visible="false"
+        android:title="Done" />
 </menu>

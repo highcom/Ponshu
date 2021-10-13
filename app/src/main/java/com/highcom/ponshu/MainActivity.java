@@ -2,14 +2,10 @@ package com.highcom.ponshu;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Filter;
-import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -24,15 +20,13 @@ import com.highcom.ponshu.databinding.ActivityMainBinding;
 import com.highcom.ponshu.ui.searchlist.SearchListFragment;
 import com.highcom.ponshu.util.SakenowaDataCollector;
 
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchListFragment.SearchListFragmentListener {
+
+    public enum MENU_TYPE {
+        SEARCH_TITLE,
+        EDIT_TITLE,
+    }
+    private MENU_TYPE mMenuType;
 
     private ActivityMainBinding binding;
     private SakenowaDataCollector mCollector;
@@ -42,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mMenuType = MENU_TYPE.SEARCH_TITLE;
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -64,20 +60,28 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         super.onCreateOptionsMenu(menu);
 
         // 検索バーの追加
-        getMenuInflater().inflate(R.menu.search_menu, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
 
-        MenuItem menuItem = menu.findItem(R.id.search_menu_search_view);
-        mSearchView = (SearchView)menuItem.getActionView();
-        SearchView.SearchAutoComplete searchAutoComplete = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
-        searchAutoComplete.setHintTextColor(Color.rgb(0xff, 0xff, 0xff));
-        searchAutoComplete.setHint("検索キーワード");
-        mSearchView.setOnQueryTextListener(this);
+        if (mMenuType == MENU_TYPE.SEARCH_TITLE) {
+            menu.findItem(R.id.menu_search_view).setVisible(true);
+            menu.findItem(R.id.menu_done_button).setVisible(false);
 
-        mSearchView.setOnCloseListener(() -> {
-            getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
-            mSearchListFragment = null;
-            return false;
-        });
+            MenuItem menuItem = menu.findItem(R.id.menu_search_view);
+            mSearchView = (SearchView)menuItem.getActionView();
+            SearchView.SearchAutoComplete searchAutoComplete = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
+            searchAutoComplete.setHintTextColor(Color.rgb(0xff, 0xff, 0xff));
+            searchAutoComplete.setHint("検索キーワード");
+            mSearchView.setOnQueryTextListener(this);
+
+            mSearchView.setOnCloseListener(() -> {
+                getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
+                mSearchListFragment = null;
+                return false;
+            });
+        } else {
+            menu.findItem(R.id.menu_search_view).setVisible(false);
+            menu.findItem(R.id.menu_done_button).setVisible(true);
+        }
 
         return true;
     }
@@ -104,10 +108,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public boolean onQueryTextChange(String newText) {
         if (mSearchListFragment == null) {
+            setMenuType(MENU_TYPE.SEARCH_TITLE);
             mSearchListFragment = new SearchListFragment(mCollector.getBrandsList(), this);
             getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
         }
         setSearchWordFilter(newText);
         return false;
+    }
+
+    public void setMenuType(MENU_TYPE type) {
+        mMenuType = type;
     }
 }
