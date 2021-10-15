@@ -1,5 +1,6 @@
 package com.highcom.ponshu;
 
+import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,6 +18,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.highcom.ponshu.databinding.ActivityMainBinding;
+import com.highcom.ponshu.ui.detailitem.ItemDetailFragment;
 import com.highcom.ponshu.ui.searchlist.SearchListFragment;
 import com.highcom.ponshu.util.SakenowaDataCollector;
 
@@ -61,13 +63,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         // 検索バーの追加
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        MenuItem searchMenuItem = menu.findItem(R.id.menu_search_view);
+        MenuItem doneMenuItem = menu.findItem(R.id.menu_done_button);
 
         if (mMenuType == MENU_TYPE.SEARCH_TITLE) {
-            menu.findItem(R.id.menu_search_view).setVisible(true);
-            menu.findItem(R.id.menu_done_button).setVisible(false);
+            searchMenuItem.setVisible(true);
+            doneMenuItem.setVisible(false);
 
-            MenuItem menuItem = menu.findItem(R.id.menu_search_view);
-            mSearchView = (SearchView)menuItem.getActionView();
+            mSearchView = (SearchView)searchMenuItem.getActionView();
             SearchView.SearchAutoComplete searchAutoComplete = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
             searchAutoComplete.setHintTextColor(Color.rgb(0xff, 0xff, 0xff));
             searchAutoComplete.setHint("検索キーワード");
@@ -79,8 +82,18 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 return false;
             });
         } else {
-            menu.findItem(R.id.menu_search_view).setVisible(false);
-            menu.findItem(R.id.menu_done_button).setVisible(true);
+            searchMenuItem.setVisible(false);
+            doneMenuItem.setVisible(true);
+            doneMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    Object fragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
+                    if (fragment instanceof ItemDetailFragment) {
+                        ((ItemDetailFragment)fragment).confirmEditData();
+                    }
+                    return false;
+                }
+            });
         }
 
         return true;

@@ -193,6 +193,11 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
     }
 
+    public void confirmEditData() {
+        // TODO:Firebaseにデータ登録をする
+        mTitle.setText("確定");
+    }
+
     private void RadarChartInit(View view)
     {
         mRadarChart = view.findViewById(R.id.radar_chart);
