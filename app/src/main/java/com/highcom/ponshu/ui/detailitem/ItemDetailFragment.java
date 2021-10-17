@@ -40,11 +40,13 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.highcom.ponshu.MainActivity;
 import com.highcom.ponshu.R;
+import com.highcom.ponshu.datamodel.Aroma;
 import com.highcom.ponshu.ui.searchlist.SearchListFragment;
 import com.highcom.ponshu.util.SakenowaDataCollector;
 
@@ -52,6 +54,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, SearchListFragment.SearchListFragmentListener, View.OnClickListener {
@@ -66,6 +69,9 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
 
     private FirebaseFirestore mDb;
     private ArrayList<Entry> mAromaEntryList;
+
+    private List<HashMap<String, Object>> mAromaGetFirestoreList;
+    private List<Aroma> mAromaSetFirestoreList;
 
     @SuppressLint("SimpleDateFormat")
     @Nullable
@@ -93,6 +99,8 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         });
 
         mAromaEntryList = new ArrayList<>();
+        mAromaSetFirestoreList = new ArrayList<>();
+
         mSdf = new SimpleDateFormat("yyyy/MM/dd");
         mSelectDate = new Date();
 
@@ -106,17 +114,20 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if(documentSnapshot.exists()) {
-                    ArrayList<Long> elapsedDayList = (ArrayList) documentSnapshot.get("elapsedDay");
-                    ArrayList<Long> aromaList = (ArrayList) documentSnapshot.get("aroma");
-                    if (elapsedDayList == null || aromaList == null) return;
-                    for (int i = 0; i < elapsedDayList.size() && i < aromaList.size(); i++) {
-                        Long x = elapsedDayList.get(i);
-                        Long y = aromaList.get(i);
-                        mAromaEntryList.add(new Entry((float)x, (float)y, new Date()));
+                    mAromaGetFirestoreList = (ArrayList<HashMap<String, Object>>) documentSnapshot.get("aroma");
+                    if (mAromaGetFirestoreList == null || mAromaGetFirestoreList.isEmpty()) return;
+                    for (Map<String, Object> aroma : mAromaGetFirestoreList) {
+                        Long x = (Long)aroma.get("elapsedCount");
+                        Long y = (Long)aroma.get("aromaLevel");
+                        Date date = ((Timestamp)aroma.get("elapsedDate")).toDate();
+                        mAromaEntryList.add(new Entry((float)x, (float)y, date));
                     }
                     if (mAromaEntryList.size() > 0) {
                         setLineData(mAromaEntryList);
                         LineChartInit(view);
+                        for (Entry aromaEntry : mAromaEntryList) {
+                            mAromaSetFirestoreList.add(new Aroma((long)aromaEntry.getX(), (long)aromaEntry.getY(), (Date)aromaEntry.getData()));
+                        }
                     }
                 }
             }
@@ -142,26 +153,16 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
                 }
                 float y = Float.parseFloat(aromaSpinner.getSelectedItem().toString());
                 mAromaEntryList.add(new Entry(x, y, mSelectDate));
-                Map<String, Object> elapsedDayData = new HashMap<>();
-                for (Entry entry : mAromaEntryList) {
-                    elapsedDayData.put("elapsedDay", (long) entry.getX());
-                }
-                documentReference.set(elapsedDayData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                mAromaSetFirestoreList.add(new Aroma((long)x, (long)y, mSelectDate));
+                Map<String, Object> aroma = new HashMap<>();
+                aroma.put("aroma", mAromaSetFirestoreList);
+                documentReference.set(aroma).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        Map<String, Object> aromaData = new HashMap<>();
-                        for (Entry entry : mAromaEntryList) {
-                            elapsedDayData.put("aroma", (long) entry.getY());
-                        }
                         Log.d("DATABASE", "documentSet:success");
-                        documentReference.set(aromaData).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                setLineData(mAromaEntryList);
+                        setLineData(mAromaEntryList);
 //                              mLineChart.invalidate();
-                                LineChartInit(view);
-                            }
-                        });
+                        LineChartInit(view);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -194,8 +195,22 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
     }
 
     public void confirmEditData() {
-        // TODO:Firebaseにデータ登録をする
-        mTitle.setText("確定");
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", mTitle.getText().toString());
+        mDb.collection("BrandTitle").document("brand")
+                .set(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d("ADD", "Success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("ADD", "Failure");
+                    }
+                });
     }
 
     private void RadarChartInit(View view)
