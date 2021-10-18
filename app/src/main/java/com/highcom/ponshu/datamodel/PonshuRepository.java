@@ -11,6 +11,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class PonshuRepository {
     private FirebaseFirestore mDb;
     private CollectionReference mCollectionRef;
 
+    private MutableLiveData<List<String>> mBrandNameList;
     private MutableLiveData<Brand> mBrand;
 
     public static PonshuRepository getInstance() {
@@ -36,6 +38,29 @@ public class PonshuRepository {
     private PonshuRepository() {
         mDb = FirebaseFirestore.getInstance();
         mCollectionRef = mDb.collection("BrandList");
+    }
+
+    public LiveData<List<String>> getBrandNameList() {
+        if (mBrandNameList == null) {
+            mBrandNameList = new MutableLiveData<>();
+        }
+        mCollectionRef.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<String> brandNameList = new ArrayList<>();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Map<String, Object> brandData = (Map<String, Object>) document.getData();
+                                brandNameList.add((String)brandData.get("title"));
+                            }
+                            mBrandNameList.setValue(brandNameList);
+                        } else {
+                            Log.d("FIREBASE", task.getException().toString());
+                        }
+                    }
+                });
+        return mBrandNameList;
     }
 
     public LiveData<Brand> getBrand(String name) {

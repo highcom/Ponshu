@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,12 +25,10 @@ public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
-    private FloatingActionButton mAddFab;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -38,11 +37,8 @@ public class HomeFragment extends Fragment {
         HomeListAdapter homeListAdapter = new HomeListAdapter(new HomeListAdapter.HomeListDiff());
         recyclerView.setAdapter(homeListAdapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3, RecyclerView.VERTICAL, false));
-        List<String> dataList = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            dataList.add("myitem" + i);
-        }
-        homeListAdapter.submitList(dataList);
+
+        homeViewModel.getBrandNameList().observe(getViewLifecycleOwner(), strings -> homeListAdapter.submitList(strings));
 
         binding.addFab.setOnClickListener(v -> {
             ItemDetailFragment fragment = new ItemDetailFragment();
