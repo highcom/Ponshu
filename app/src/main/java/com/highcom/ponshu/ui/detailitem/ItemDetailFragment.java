@@ -41,9 +41,9 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet;
 import com.highcom.ponshu.MainActivity;
 import com.highcom.ponshu.R;
+import com.highcom.ponshu.databinding.FragmentItemDetailBinding;
 import com.highcom.ponshu.datamodel.Aroma;
 import com.highcom.ponshu.datamodel.Brand;
-import com.highcom.ponshu.datamodel.ItemDetailViewModel;
 import com.highcom.ponshu.ui.searchlist.SearchListFragment;
 import com.highcom.ponshu.util.SakenowaDataCollector;
 
@@ -54,6 +54,7 @@ import java.util.List;
 
 public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, SearchListFragment.SearchListFragmentListener, View.OnClickListener {
 
+    private FragmentItemDetailBinding binding;
     private EditText mTitle;
     private EditText mSubTitle;
     private EditText mPolishingRate;
@@ -76,7 +77,8 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_item_detail, container, false);
+        binding = FragmentItemDetailBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
         ((MainActivity)getActivity()).setMenuType(MainActivity.MENU_TYPE.EDIT_TITLE);
         getActivity().getFragmentManager().invalidateOptionsMenu();
@@ -87,7 +89,7 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         /*
           タイトルデータ設定
          */
-        mTitle = view.findViewById(R.id.detail_title);
+        mTitle = binding.detailTitle;
         mSearchListFragment = new SearchListFragment(SakenowaDataCollector.getInstance().getBrandsList(), mTitle.getText().toString(), true, this);
         mTitle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,8 +100,8 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
             }
         });
 
-        mSubTitle = view.findViewById(R.id.detail_subtitle);
-        mPolishingRate = view.findViewById(R.id.detail_polishing_rate);
+        mSubTitle = binding.detailSubtitle;
+        mPolishingRate = binding.detailPolishingRate;
 
         /*
           香りデータ設定
@@ -109,18 +111,18 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         mSdf = new SimpleDateFormat("yyyy/MM/dd");
         mSelectDate = new Date();
 
-        mInputDateTextView = view.findViewById(R.id.detail_input_date);
+        mInputDateTextView = binding.detailInputDate;
         mInputDateTextView.setText(mSdf.format(mSelectDate));
         mInputDateTextView.setOnClickListener(this);
 
         // 香りレベルスピナー設定処理
-        Spinner aromaSpinner = view.findViewById(R.id.detail_aroma);
+        Spinner aromaSpinner = binding.detailAroma;
         ArrayAdapter<String> aromaAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
         aromaAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         for (Integer i = 1; i <= 10; i++) aromaAdapter.add(i.toString());
         aromaSpinner.setAdapter(aromaAdapter);
 
-        Button registAromaButton = view.findViewById(R.id.detail_aroma_register);
+        Button registAromaButton = binding.detailAromaRegister;
         registAromaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -200,7 +202,7 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
      */
     private void RadarChartInit(View view)
     {
-        mRadarChart = view.findViewById(R.id.radar_chart);
+        mRadarChart = binding.radarChart;
         mRadarChart.setBackgroundColor(Color.rgb(60, 65, 82));
 
         mRadarChart.getDescription().setEnabled(false);
@@ -261,7 +263,7 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
      */
     private void LineChartInit(View view)
     {
-        mLineChart = view.findViewById(R.id.line_chart);
+        mLineChart = binding.lineChart;
         mLineChart.setViewPortOffsets(0, 0, 0, 0);
         mLineChart.setBackgroundColor(Color.rgb(104, 241, 175));
 
