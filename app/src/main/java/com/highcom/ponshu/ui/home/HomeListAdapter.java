@@ -13,8 +13,14 @@ import com.highcom.ponshu.R;
 import org.jetbrains.annotations.NotNull;
 
 public class HomeListAdapter extends ListAdapter<String, HomeViewHolder> {
-    protected HomeListAdapter(@NonNull @NotNull DiffUtil.ItemCallback<String> diffCallback) {
+    public interface HomeListAdapterListener {
+        void onAdapterClicked(String name);
+    }
+    HomeListAdapterListener mHomeListAdapterListener;
+
+    protected HomeListAdapter(@NonNull @NotNull DiffUtil.ItemCallback<String> diffCallback, HomeListAdapterListener listener) {
         super(diffCallback);
+        mHomeListAdapterListener = listener;
     }
 
     @NonNull
@@ -28,6 +34,7 @@ public class HomeListAdapter extends ListAdapter<String, HomeViewHolder> {
     public void onBindViewHolder(@NonNull HomeViewHolder holder, int position) {
         String name = getItem(position);
         holder.bind(name);
+        holder.itemView.setOnClickListener(v -> mHomeListAdapterListener.onAdapterClicked(name));
     }
 
     public static class HomeListDiff extends DiffUtil.ItemCallback<String> {

@@ -21,7 +21,7 @@ import com.highcom.ponshu.ui.detailitem.ItemDetailFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements HomeListAdapter.HomeListAdapterListener {
 
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
@@ -34,7 +34,7 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         final RecyclerView recyclerView = binding.myitemRecyclerView;
-        HomeListAdapter homeListAdapter = new HomeListAdapter(new HomeListAdapter.HomeListDiff());
+        HomeListAdapter homeListAdapter = new HomeListAdapter(new HomeListAdapter.HomeListDiff(), this::onAdapterClicked);
         recyclerView.setAdapter(homeListAdapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3, RecyclerView.VERTICAL, false));
 
@@ -52,5 +52,14 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onAdapterClicked(String name) {
+        ItemDetailFragment fragment = new ItemDetailFragment();
+        Bundle args = new Bundle();
+        args.putString("TITLE", name);
+        fragment.setArguments(args);
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_activity_main, fragment).commit();
     }
 }

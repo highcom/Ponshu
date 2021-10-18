@@ -55,6 +55,7 @@ import java.util.List;
 public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, SearchListFragment.SearchListFragmentListener, View.OnClickListener {
 
     private FragmentItemDetailBinding binding;
+    private String mSelectTitleName;
     private EditText mTitle;
     private EditText mSubTitle;
     private EditText mPolishingRate;
@@ -76,6 +77,12 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        if (args != null) {
+            mSelectTitleName = args.getString("TITLE");
+        } else {
+            mSelectTitleName = "";
+        }
 
         binding = FragmentItemDetailBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
@@ -146,7 +153,7 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
           Firestoreデータ取得
          */
         mItemDetailViewModel = new ViewModelProvider(this).get(ItemDetailViewModel.class);
-        mBrandLiveData = mItemDetailViewModel.getBrand("日本酒");
+        mBrandLiveData = mItemDetailViewModel.getBrand(mSelectTitleName);
         mBrandLiveData.observe(getViewLifecycleOwner(), brand -> {
             mTitle.setText(brand.getTitle());
             mSubTitle.setText(brand.getSubtitle());
