@@ -73,18 +73,21 @@ public class PonshuRepository {
     }
 
     public void updateBrand(Brand brand) {
-        mCollectionRef.whereEqualTo("title", brand.getTitle()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    if (task.getResult().getDocuments().isEmpty()) {
-                        mCollectionRef.add(brand);
-                    } else {
-                        String id = task.getResult().getDocuments().get(0).getId();
-                        mCollectionRef.document(id).set(brand);
+        mCollectionRef.whereEqualTo("title", brand.getTitle()).get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if (task.getResult().getDocuments().isEmpty()) {
+                                mCollectionRef.add(brand);
+                            } else {
+                                String id = task.getResult().getDocuments().get(0).getId();
+                                mCollectionRef.document(id).set(brand);
+                            }
+                        } else {
+                            Log.d("FIREBASE", task.getException().toString());
+                        }
                     }
-                }
-            }
         });
     }
 }

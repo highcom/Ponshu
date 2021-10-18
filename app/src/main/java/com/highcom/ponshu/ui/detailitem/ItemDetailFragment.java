@@ -39,7 +39,6 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.highcom.ponshu.MainActivity;
 import com.highcom.ponshu.R;
 import com.highcom.ponshu.datamodel.Aroma;
@@ -56,6 +55,8 @@ import java.util.List;
 public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, SearchListFragment.SearchListFragmentListener, View.OnClickListener {
 
     private EditText mTitle;
+    private EditText mSubTitle;
+    private EditText mPolishingRate;
     private SearchListFragment mSearchListFragment;
     private RadarChart mRadarChart;
     private LineChart mLineChart;
@@ -66,7 +67,6 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
     private ItemDetailViewModel mItemDetailViewModel;
     private LiveData<Brand> mBrandLiveData;
 
-    private FirebaseFirestore mDb;
     private ArrayList<Entry> mAromaEntryList;
 
     @SuppressLint("SimpleDateFormat")
@@ -98,6 +98,9 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
             }
         });
 
+        mSubTitle = view.findViewById(R.id.detail_subtitle);
+        mPolishingRate = view.findViewById(R.id.detail_polishing_rate);
+
         /*
           香りデータ設定
          */
@@ -122,6 +125,7 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
             @Override
             public void onClick(View v) {
                 float x;
+                // 登録初日からの経過日数を求める
                 if (mAromaEntryList.size() > 0) {
                     long baseX = ((Date)mAromaEntryList.get(0).getData()).getTime() / (1000 * 60 * 60 * 24);
                     long currentX = mSelectDate.getTime() / (1000 * 60 * 60 * 24);
@@ -143,6 +147,8 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         mBrandLiveData = mItemDetailViewModel.getBrand("日本酒");
         mBrandLiveData.observe(getViewLifecycleOwner(), brand -> {
             mTitle.setText(brand.getTitle());
+            mSubTitle.setText(brand.getSubtitle());
+            mPolishingRate.setText(brand.getPolishingRate().toString());
             for (Aroma aroma : brand.getAromaList()) {
                 mAromaEntryList.add(new Entry(aroma.getElapsedCount(), aroma.getAromaLevel(), aroma.getElapsedDate()));
             }
@@ -177,8 +183,8 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
      */
     public void confirmEditData() {
         String title = mTitle.getText().toString();
-        String subTitle = "";
-        Long polishingRate = 0L;
+        String subTitle = mSubTitle.getText().toString();
+        Long polishingRate = Long.parseLong(mPolishingRate.getText().toString());
         List<Aroma> aromaList = new ArrayList<>();
         for (Entry entry : mAromaEntryList) {
             aromaList.add(new Aroma((long)entry.getX(), (long)entry.getY(), (Date)entry.getData()));
