@@ -17,11 +17,11 @@ public class ItemDetailViewModel extends AndroidViewModel {
         mRepository = PonshuRepository.getInstance();
     }
 
-    public LiveData<Brand> getBrand(String name) {
-        return mRepository.getBrand(name);
+    public LiveData<Brand> getBrand(String id) {
+        return mRepository.getBrand(id);
     }
 
-    public void updateBrand(Brand brand) {
-        mRepository.updateBrand(brand);
+    public void updateBrand(String id, Brand brand) {
+        mRepository.updateBrand(id, brand);
     }
 }

@@ -13,8 +13,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class HomeViewHolder extends RecyclerView.ViewHolder {
 
-    ImageView mMyItemImage;
-    TextView mMyItemText;
+    private String mId;
+    private ImageView mMyItemImage;
+    private TextView mMyItemText;
 
     public HomeViewHolder(@NonNull @NotNull View itemView) {
         super(itemView);
@@ -22,7 +23,8 @@ public class HomeViewHolder extends RecyclerView.ViewHolder {
         mMyItemText = (TextView) itemView.findViewById(R.id.myitem_text_view);
     }
 
-    public void bind(String name) {
+    public void bind(String id, String name) {
+        mId = id;
         mMyItemImage.setImageResource(R.drawable.ic_ponshu);
         mMyItemText.setText(name);
     }

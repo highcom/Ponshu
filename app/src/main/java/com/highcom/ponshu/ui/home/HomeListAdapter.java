@@ -9,16 +9,17 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
 import com.highcom.ponshu.R;
+import com.highcom.ponshu.datamodel.BrandIdentifier;
 
 import org.jetbrains.annotations.NotNull;
 
-public class HomeListAdapter extends ListAdapter<String, HomeViewHolder> {
+public class HomeListAdapter extends ListAdapter<BrandIdentifier, HomeViewHolder> {
     public interface HomeListAdapterListener {
         void onAdapterClicked(String name);
     }
     HomeListAdapterListener mHomeListAdapterListener;
 
-    protected HomeListAdapter(@NonNull @NotNull DiffUtil.ItemCallback<String> diffCallback, HomeListAdapterListener listener) {
+    protected HomeListAdapter(@NonNull @NotNull DiffUtil.ItemCallback<BrandIdentifier> diffCallback, HomeListAdapterListener listener) {
         super(diffCallback);
         mHomeListAdapterListener = listener;
     }
@@ -32,20 +33,21 @@ public class HomeListAdapter extends ListAdapter<String, HomeViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull HomeViewHolder holder, int position) {
-        String name = getItem(position);
-        holder.bind(name);
-        holder.itemView.setOnClickListener(v -> mHomeListAdapterListener.onAdapterClicked(name));
+        String id = getItem(position).getId();
+        String name = getItem(position).getTitle();
+        holder.bind(id, name);
+        holder.itemView.setOnClickListener(v -> mHomeListAdapterListener.onAdapterClicked(id));
     }
 
-    public static class HomeListDiff extends DiffUtil.ItemCallback<String> {
+    public static class HomeListDiff extends DiffUtil.ItemCallback<BrandIdentifier> {
 
         @Override
-        public boolean areItemsTheSame(@NonNull @NotNull String oldItem, @NonNull @NotNull String newItem) {
+        public boolean areItemsTheSame(@NonNull @NotNull BrandIdentifier oldItem, @NonNull @NotNull BrandIdentifier newItem) {
             return false;
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull @NotNull String oldItem, @NonNull @NotNull String newItem) {
+        public boolean areContentsTheSame(@NonNull @NotNull BrandIdentifier oldItem, @NonNull @NotNull BrandIdentifier newItem) {
             return false;
         }
     }

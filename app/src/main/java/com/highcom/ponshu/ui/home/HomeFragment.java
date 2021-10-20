@@ -16,10 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.highcom.ponshu.R;
 import com.highcom.ponshu.databinding.FragmentHomeBinding;
+import com.highcom.ponshu.datamodel.BrandIdentifier;
 import com.highcom.ponshu.ui.detailitem.ItemDetailFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class HomeFragment extends Fragment implements HomeListAdapter.HomeListAdapterListener {
 
@@ -38,7 +40,12 @@ public class HomeFragment extends Fragment implements HomeListAdapter.HomeListAd
         recyclerView.setAdapter(homeListAdapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3, RecyclerView.VERTICAL, false));
 
-        homeViewModel.getBrandNameList().observe(getViewLifecycleOwner(), strings -> homeListAdapter.submitList(strings));
+        homeViewModel.getBrandIdentifierList().observe(getViewLifecycleOwner(), new Observer<List<BrandIdentifier>>() {
+            @Override
+            public void onChanged(List<BrandIdentifier> brandIdentifiers) {
+                homeListAdapter.submitList(brandIdentifiers);
+            }
+        });
 
         binding.addFab.setOnClickListener(v -> {
             ItemDetailFragment fragment = new ItemDetailFragment();
@@ -55,10 +62,10 @@ public class HomeFragment extends Fragment implements HomeListAdapter.HomeListAd
     }
 
     @Override
-    public void onAdapterClicked(String name) {
+    public void onAdapterClicked(String id) {
         ItemDetailFragment fragment = new ItemDetailFragment();
         Bundle args = new Bundle();
-        args.putString("TITLE", name);
+        args.putString("BRAND_ID", id);
         fragment.setArguments(args);
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_activity_main, fragment).commit();
     }

@@ -55,7 +55,7 @@ import java.util.List;
 public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, SearchListFragment.SearchListFragmentListener, View.OnClickListener {
 
     private FragmentItemDetailBinding binding;
-    private String mSelectTitleName;
+    private String mSelectBrandId;
     private EditText mTitle;
     private EditText mSubTitle;
     private EditText mPolishingRate;
@@ -79,9 +79,9 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
                              @Nullable Bundle savedInstanceState) {
         Bundle args = getArguments();
         if (args != null) {
-            mSelectTitleName = args.getString("TITLE");
+            mSelectBrandId = args.getString("BRAND_ID");
         } else {
-            mSelectTitleName = "";
+            mSelectBrandId = null;
         }
 
         binding = FragmentItemDetailBinding.inflate(inflater, container, false);
@@ -153,7 +153,7 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
           Firestoreデータ取得
          */
         mItemDetailViewModel = new ViewModelProvider(this).get(ItemDetailViewModel.class);
-        mBrandLiveData = mItemDetailViewModel.getBrand(mSelectTitleName);
+        mBrandLiveData = mItemDetailViewModel.getBrand(mSelectBrandId);
         mBrandLiveData.observe(getViewLifecycleOwner(), brand -> {
             mTitle.setText(brand.getTitle());
             mSubTitle.setText(brand.getSubtitle());
@@ -199,7 +199,7 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
             aromaList.add(new Aroma((long)entry.getX(), (long)entry.getY(), (Date)entry.getData()));
         }
         Brand brand = new Brand(title, subTitle, polishingRate, aromaList);
-        mItemDetailViewModel.updateBrand(brand);
+        mItemDetailViewModel.updateBrand(mSelectBrandId, brand);
     }
 
     /**
