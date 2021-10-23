@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -24,9 +25,14 @@ import okhttp3.Response;
 public class SakenowaDataCollector {
     private static SakenowaDataCollector mSakenowaDataCollector;
     private List<String> mBrandsList;
+    private List<String> mBreweryList;
+
+    public interface SakenowaDataFormatter {
+        void createData(String jsonStr);
+    }
 
     private SakenowaDataCollector() {
-        requestBrands();
+        requestSakenowaData();
     }
 
     public static SakenowaDataCollector getInstance() {
@@ -40,23 +46,50 @@ public class SakenowaDataCollector {
         return mBrandsList;
     }
 
-    private void requestBrands() {
+    public List<String> getmBreweryList() {
+        return mBreweryList;
+    }
+
+    private void requestSakenowaData() {
         try{
-            httpRequest("https://muro.sakenowa.com/sakenowa-data/api/brands");
+            httpRequest("https://muro.sakenowa.com/sakenowa-data/api/brands", jsonStr -> {
+                try {
+                    //jsonパース
+                    JSONObject json = new JSONObject(jsonStr);
+                    JSONArray brandsArray = json.getJSONArray("brands");
+                    mBrandsList = new ArrayList<>();
+                    for (int i = 0; i < brandsArray.length(); i++) {
+                        mBrandsList.add(brandsArray.getJSONObject(i).get("name").toString());
+                    }
+                }catch(Exception e){
+                    Log.e("HTTP_ERR",e.getMessage());
+                }
+            });
+
+            httpRequest("https://muro.sakenowa.com/sakenowa-data/api/breweries", jsonStr -> {
+                try {
+                    //jsonパース
+                    JSONObject json = new JSONObject(jsonStr);
+                    JSONArray brandsArray = json.getJSONArray("breweries");
+                    mBreweryList = new ArrayList<>();
+                    for (int i = 0; i < brandsArray.length(); i++) {
+                        mBreweryList.add(brandsArray.getJSONObject(i).get("name").toString());
+                    }
+                }catch(Exception e){
+                    Log.e("HTTP_ERR",e.getMessage());
+                }
+            });
         }catch(Exception e){
             Log.e("HTTP_ERR",e.getMessage());
         }
     }
 
-    void httpRequest(String url) throws IOException {
+    void httpRequest(String url, SakenowaDataFormatter formatter) throws IOException {
 
         //OkHttpClinet生成
         OkHttpClient client = new OkHttpClient();
-
         //request生成
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+        Request request = new Request.Builder().url(url).build();
 
         //非同期リクエスト
         client.newCall(request)
@@ -75,19 +108,8 @@ public class SakenowaDataCollector {
                         //response取り出し
                         final String jsonStr = response.body().string();
 
-                        //JSON処理
-                        try{
-                            //jsonパース
-                            JSONObject json = new JSONObject(jsonStr);
-                            JSONArray brandsArray = json.getJSONArray("brands");
-                            mBrandsList = new ArrayList<>();
-                            for (int i = 0; i < brandsArray.length(); i++) {
-                                mBrandsList.add(brandsArray.getJSONObject(i).get("name").toString());
-                            }
-                        }catch(Exception e){
-                            Log.e("HTTP_ERR",e.getMessage());
-                        }
-
+                        //JSON処理の委譲
+                        formatter.createData(jsonStr);
                     }
                 });
     }

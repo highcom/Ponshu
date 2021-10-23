@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.highcom.ponshu.MainActivity;
 import com.highcom.ponshu.R;
@@ -37,17 +36,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, SearchListFragment.SearchListFragmentListener, View.OnClickListener {
+public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, View.OnClickListener {
 
     private FragmentItemDetailBinding binding;
     private String mSelectBrandId;
     private EditText mTitle;
     private EditText mSubTitle;
     private EditText mPolishingRate;
+    private EditText mBrewery;
+
     private SearchListFragment mSearchListFragment;
     private RadarChartItem mRadarChartItem;
     private LineChartItem mLineChartItem;
-    private LineChart mLineChart;
     private TextView mInputDateTextView;
     private SimpleDateFormat mSdf;
     private Date mSelectDate;
@@ -85,18 +85,52 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
           タイトルデータ設定
          */
         mTitle = binding.detailTitle;
-        mSearchListFragment = new SearchListFragment(SakenowaDataCollector.getInstance().getBrandsList(), mTitle.getText().toString(), true, this);
-        mTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 銘柄一覧を表示する
-                mSearchListFragment.setTitle(mTitle.getText().toString());
-                getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
-            }
+        mTitle.setOnClickListener(v -> {
+            // 銘柄一覧を表示する
+            mSearchListFragment = new SearchListFragment(SakenowaDataCollector.getInstance().getBrandsList(), mTitle.getText().toString(), true,
+                    name -> {
+                        getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
+                        mTitle.setText(name);
+                    });
+            mSearchListFragment.setTitle(mTitle.getText().toString());
+            getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
         });
 
+        /**
+         * サブタイトルデータ設定
+         */
         mSubTitle = binding.detailSubtitle;
+
+        /**
+         * 特定名称データ設定
+         */
+        Spinner specificSpinner = binding.detailSpecificName;
+        ArrayAdapter<String> specificAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+        specificAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        String[] specificItems = {"吟醸酒", "大吟醸酒", "純米酒", "純米吟醸酒", "純米大吟醸酒", "特別純米酒", "本醸造酒", "特別本醸造酒"};
+        for (String specificItem : specificItems) specificAdapter.add(specificItem);
+        specificSpinner.setAdapter(specificAdapter);
+
+        /**
+         * 精米歩合データ設定
+         */
         mPolishingRate = binding.detailPolishingRate;
+
+        /**
+         * 酒造名データ設定
+         */
+        mBrewery = binding.detailBrewery;
+        mBrewery.setOnClickListener(v -> {
+            // 酒蔵一覧を表示する
+            mSearchListFragment = new SearchListFragment(SakenowaDataCollector.getInstance().getmBreweryList(), mBrewery.getText().toString(), true,
+                    name -> {
+                        getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
+                        mBrewery.setText(name);
+                    });
+            mSearchListFragment.setTitle(mTitle.getText().toString());
+            getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
+
+        });
 
         /*
           香りデータ設定
@@ -153,12 +187,6 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         });
 
         return view;
-    }
-
-    @Override
-    public void onAdapterClicked(String name) {
-        getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
-        mTitle.setText(name);
     }
 
     @Override
