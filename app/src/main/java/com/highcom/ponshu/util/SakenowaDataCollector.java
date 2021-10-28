@@ -26,6 +26,7 @@ public class SakenowaDataCollector {
     private static SakenowaDataCollector mSakenowaDataCollector;
     private List<String> mBrandsList;
     private List<String> mBreweryList;
+    private List<String> mAreaList;
 
     public interface SakenowaDataFormatter {
         void createData(String jsonStr);
@@ -46,8 +47,12 @@ public class SakenowaDataCollector {
         return mBrandsList;
     }
 
-    public List<String> getmBreweryList() {
+    public List<String> getBreweryList() {
         return mBreweryList;
+    }
+
+    public List<String> getAreaList() {
+        return mAreaList;
     }
 
     private void requestSakenowaData() {
@@ -56,10 +61,10 @@ public class SakenowaDataCollector {
                 try {
                     //jsonパース
                     JSONObject json = new JSONObject(jsonStr);
-                    JSONArray brandsArray = json.getJSONArray("brands");
+                    JSONArray array = json.getJSONArray("brands");
                     mBrandsList = new ArrayList<>();
-                    for (int i = 0; i < brandsArray.length(); i++) {
-                        mBrandsList.add(brandsArray.getJSONObject(i).get("name").toString());
+                    for (int i = 0; i < array.length(); i++) {
+                        mBrandsList.add(array.getJSONObject(i).get("name").toString());
                     }
                 }catch(Exception e){
                     Log.e("HTTP_ERR",e.getMessage());
@@ -70,10 +75,24 @@ public class SakenowaDataCollector {
                 try {
                     //jsonパース
                     JSONObject json = new JSONObject(jsonStr);
-                    JSONArray brandsArray = json.getJSONArray("breweries");
+                    JSONArray array = json.getJSONArray("breweries");
                     mBreweryList = new ArrayList<>();
-                    for (int i = 0; i < brandsArray.length(); i++) {
-                        mBreweryList.add(brandsArray.getJSONObject(i).get("name").toString());
+                    for (int i = 0; i < array.length(); i++) {
+                        mBreweryList.add(array.getJSONObject(i).get("name").toString());
+                    }
+                }catch(Exception e){
+                    Log.e("HTTP_ERR",e.getMessage());
+                }
+            });
+
+            httpRequest("https://muro.sakenowa.com/sakenowa-data/api/areas", jsonStr -> {
+                try {
+                    //jsonパース
+                    JSONObject json = new JSONObject(jsonStr);
+                    JSONArray array = json.getJSONArray("areas");
+                    mAreaList = new ArrayList<>();
+                    for (int i = 0; i < array.length(); i++) {
+                        mAreaList.add(array.getJSONObject(i).get("name").toString());
                     }
                 }catch(Exception e){
                     Log.e("HTTP_ERR",e.getMessage());

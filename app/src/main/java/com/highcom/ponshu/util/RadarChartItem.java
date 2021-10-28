@@ -18,6 +18,7 @@ import com.highcom.ponshu.R;
 import com.highcom.ponshu.ui.detailitem.RadarMarkerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RadarChartItem {
     private Context mContext;
@@ -49,7 +50,7 @@ public class RadarChartItem {
         mv.setChartView(mRadarChart); // For bounds control
         mRadarChart.setMarker(mv); // Set the marker to the mRadarChart
 
-        setRadarData();
+//        setRadarData();
 
         mRadarChart.animateXY(1400, 1400, Easing.EaseInOutQuad);
 
@@ -83,32 +84,32 @@ public class RadarChartItem {
         l.setYEntrySpace(5f);
         l.setTextColor(Color.WHITE);
 
-        setRadarData();
+//        setRadarData();
     }
 
     /**
      * レーターチャートデータ設定処理
      */
-    private void setRadarData() {
+    public void setRadarData(List<RadarEntry> values) {
 
         float mul = 80;
         float min = 20;
         int cnt = 5;
 
-        ArrayList<RadarEntry> entries1 = new ArrayList<>();
-        ArrayList<RadarEntry> entries2 = new ArrayList<>();
+//        ArrayList<RadarEntry> entries1 = new ArrayList<>();
+//        ArrayList<RadarEntry> entries2 = new ArrayList<>();
+//
+//        // NOTE: The order of the entries when being added to the entries array determines their position around the center of
+//        // the chart.
+//        for (int i = 0; i < cnt; i++) {
+//            float val1 = (float) (Math.random() * mul) + min;
+//            entries1.add(new RadarEntry(val1));
+//
+//            float val2 = (float) (Math.random() * mul) + min;
+//            entries2.add(new RadarEntry(val2));
+//        }
 
-        // NOTE: The order of the entries when being added to the entries array determines their position around the center of
-        // the chart.
-        for (int i = 0; i < cnt; i++) {
-            float val1 = (float) (Math.random() * mul) + min;
-            entries1.add(new RadarEntry(val1));
-
-            float val2 = (float) (Math.random() * mul) + min;
-            entries2.add(new RadarEntry(val2));
-        }
-
-        RadarDataSet set1 = new RadarDataSet(entries1, "香り");
+        RadarDataSet set1 = new RadarDataSet(values, "香り");
         set1.setColor(Color.rgb(103, 110, 129));
         set1.setFillColor(Color.rgb(103, 110, 129));
         set1.setDrawFilled(true);

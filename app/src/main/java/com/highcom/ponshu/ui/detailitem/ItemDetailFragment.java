@@ -21,6 +21,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.RadarEntry;
 import com.highcom.ponshu.MainActivity;
 import com.highcom.ponshu.R;
 import com.highcom.ponshu.databinding.FragmentItemDetailBinding;
@@ -42,8 +43,14 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
     private String mSelectBrandId;
     private EditText mTitle;
     private EditText mSubTitle;
+    private Spinner mSpecificSpinner;
     private EditText mPolishingRate;
     private EditText mBrewery;
+    private EditText mArea;
+    private EditText mRawMaterial;
+    private EditText mCapacity;
+    private EditText mStorageTemparture;
+    private EditText mHowToDrink;
 
     private SearchListFragment mSearchListFragment;
     private RadarChartItem mRadarChartItem;
@@ -55,6 +62,7 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
     private ItemDetailViewModel mItemDetailViewModel;
     private LiveData<Brand> mBrandLiveData;
 
+    private ArrayList<RadarEntry> mTasteEntryList;
     private ArrayList<Entry> mAromaEntryList;
 
     @SuppressLint("SimpleDateFormat")
@@ -104,12 +112,12 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         /**
          * 特定名称データ設定
          */
-        Spinner specificSpinner = binding.detailSpecificName;
+        mSpecificSpinner = binding.detailSpecificName;
         ArrayAdapter<String> specificAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
         specificAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         String[] specificItems = {"吟醸酒", "大吟醸酒", "純米酒", "純米吟醸酒", "純米大吟醸酒", "特別純米酒", "本醸造酒", "特別本醸造酒"};
         for (String specificItem : specificItems) specificAdapter.add(specificItem);
-        specificSpinner.setAdapter(specificAdapter);
+        mSpecificSpinner.setAdapter(specificAdapter);
 
         /**
          * 精米歩合データ設定
@@ -122,14 +130,83 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         mBrewery = binding.detailBrewery;
         mBrewery.setOnClickListener(v -> {
             // 酒蔵一覧を表示する
-            mSearchListFragment = new SearchListFragment(SakenowaDataCollector.getInstance().getmBreweryList(), mBrewery.getText().toString(), true,
+            mSearchListFragment = new SearchListFragment(SakenowaDataCollector.getInstance().getBreweryList(), mBrewery.getText().toString(), true,
                     name -> {
                         getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
                         mBrewery.setText(name);
                     });
             mSearchListFragment.setTitle(mTitle.getText().toString());
             getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
+        });
 
+        /*
+          産地データ設定
+         */
+        mArea = binding.detailArea;
+        mArea.setOnClickListener(v -> {
+            // 地域一覧を表示する
+            mSearchListFragment = new SearchListFragment(SakenowaDataCollector.getInstance().getAreaList(), mArea.getText().toString(), true,
+                    name -> {
+                        getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
+                        mArea.setText(name);
+                    });
+            mSearchListFragment.setTitle(mTitle.getText().toString());
+            getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
+        });
+
+        /*
+          原材料データ設定
+         */
+        mRawMaterial = binding.detailRawMaterial;
+
+        /*
+          内容量データ設定
+         */
+        mCapacity = binding.detailCapacity;
+
+        /*
+          保管温度データ設定
+         */
+        mStorageTemparture = binding.detailStorageTemparture;
+
+        /*
+          飲み方データ設定
+         */
+        Spinner howToDrinkSpinner = binding.detailHowToDrink;
+        ArrayAdapter<String> howToDrinkAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+        howToDrinkAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        String[] howToDrinkItems = {"雪冷え", "花冷え", "涼冷え", "冷や", "日向燗", "人肌燗", "ぬる燗", "上燗", "熱燗", "飛び切り燗"};
+        for (String howToDrinkItem : howToDrinkItems) howToDrinkAdapter.add(howToDrinkItem);
+        howToDrinkSpinner.setAdapter(howToDrinkAdapter);
+
+        /*
+          五味データ設定
+         */
+        mTasteEntryList = new ArrayList<>();
+
+        List<Spinner> tastesSpinner = new ArrayList<>();
+        tastesSpinner.add(binding.detailSweetness);
+        tastesSpinner.add(binding.detailSourness);
+        tastesSpinner.add(binding.detailPungent);
+        tastesSpinner.add(binding.detailBitterness);
+        tastesSpinner.add(binding.detailAstringent);
+        for (Spinner tasteSpinner : tastesSpinner) {
+            ArrayAdapter<String> tasteAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+            tasteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            for (Integer i = 1; i <= 5; i++) tasteAdapter.add(i.toString());
+            tasteSpinner.setAdapter(tasteAdapter);
+        }
+
+        Button registTasteButton = binding.detailTasteRegister;
+        registTasteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (Spinner tasteSpinner : tastesSpinner) {
+                    float val = Float.parseFloat(tasteSpinner.getSelectedItem().toString());
+                    mTasteEntryList.add(new RadarEntry(val));
+                }
+                mRadarChartItem.setRadarData(mTasteEntryList);
+            }
         });
 
         /*
@@ -180,6 +257,7 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
             mTitle.setText(brand.getTitle());
             mSubTitle.setText(brand.getSubtitle());
             mPolishingRate.setText(brand.getPolishingRate().toString());
+            // TODO:ここに追加していく
             for (Aroma aroma : brand.getAromaList()) {
                 mAromaEntryList.add(new Entry(aroma.getElapsedCount(), aroma.getAromaLevel(), aroma.getElapsedDate()));
             }
