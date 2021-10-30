@@ -69,7 +69,7 @@ public class PonshuRepository {
             mBrand = new MutableLiveData<>();
         }
         if (id == null) {
-            Brand brand = new Brand("", "", 0L, new ArrayList<>());
+            Brand brand = new Brand("", "", "", 0L, "", "", "", 0L, 0L, "", new ArrayList<>(), new ArrayList<>());
         } else {
             mCollectionRef.document(id).get()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -79,7 +79,15 @@ public class PonshuRepository {
                                 Map<String, Object> brandData = (Map<String, Object>) task.getResult().getData();
                                 String title = (String) brandData.get("title");
                                 String subTitle = (String) brandData.get("subTitle");
+                                String specific = (String) brandData.get("specific");
                                 Long polisingRate = (Long) brandData.get("polishingRate");
+                                String brewery = (String) brandData.get("brewery");
+                                String area = (String) brandData.get("area");
+                                String rawMaterial = (String) brandData.get("rawMaterial");
+                                Long capacity = (Long) brandData.get("capacity");
+                                Long storageTemperature = (Long) brandData.get("storageTemperature");
+                                String howToDrink = (String) brandData.get("howToDrink");
+                                List<Long> tasteList = (List<Long>) brandData.get("tasteList");
                                 List<Map<String, Object>> aromaRawList = (List<Map<String, Object>>) brandData.get("aromaList");
                                 List<Aroma> aromaList = new ArrayList<>();
                                 for (Map<String, Object> aromaRawData : aromaRawList) {
@@ -89,7 +97,7 @@ public class PonshuRepository {
                                     Aroma aroma = new Aroma(elapsedCount, aromaLevel, elapsedDate);
                                     aromaList.add(aroma);
                                 }
-                                Brand brand = new Brand(title, subTitle, polisingRate, aromaList);
+                                Brand brand = new Brand(title, subTitle, specific, polisingRate, brewery, area, rawMaterial, capacity, storageTemperature, howToDrink, tasteList, aromaList);
                                 mBrand.setValue(brand);
                             } else {
                                 Log.d("FIREBASE", task.getException().toString());

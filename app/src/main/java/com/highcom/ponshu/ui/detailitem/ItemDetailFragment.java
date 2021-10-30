@@ -49,8 +49,8 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
     private EditText mArea;
     private EditText mRawMaterial;
     private EditText mCapacity;
-    private EditText mStorageTemparture;
-    private EditText mHowToDrink;
+    private EditText mStorageTemperature;
+    private Spinner mHowToDrinkSpinner;
 
     private SearchListFragment mSearchListFragment;
     private RadarChartItem mRadarChartItem;
@@ -64,6 +64,9 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
 
     private ArrayList<RadarEntry> mTasteEntryList;
     private ArrayList<Entry> mAromaEntryList;
+
+    private static String[] mSpecificItems = {"吟醸酒", "大吟醸酒", "純米酒", "純米吟醸酒", "純米大吟醸酒", "特別純米酒", "本醸造酒", "特別本醸造酒"};
+    private static String[] mHowToDrinkItems = {"雪冷え", "花冷え", "涼冷え", "冷や", "日向燗", "人肌燗", "ぬる燗", "上燗", "熱燗", "飛び切り燗"};
 
     @SuppressLint("SimpleDateFormat")
     @Nullable
@@ -115,8 +118,7 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         mSpecificSpinner = binding.detailSpecificName;
         ArrayAdapter<String> specificAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
         specificAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        String[] specificItems = {"吟醸酒", "大吟醸酒", "純米酒", "純米吟醸酒", "純米大吟醸酒", "特別純米酒", "本醸造酒", "特別本醸造酒"};
-        for (String specificItem : specificItems) specificAdapter.add(specificItem);
+        for (String specificItem : mSpecificItems) specificAdapter.add(specificItem);
         mSpecificSpinner.setAdapter(specificAdapter);
 
         /**
@@ -167,17 +169,16 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         /*
           保管温度データ設定
          */
-        mStorageTemparture = binding.detailStorageTemparture;
+        mStorageTemperature = binding.detailStorageTemperature;
 
         /*
           飲み方データ設定
          */
-        Spinner howToDrinkSpinner = binding.detailHowToDrink;
+        mHowToDrinkSpinner = binding.detailHowToDrink;
         ArrayAdapter<String> howToDrinkAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
         howToDrinkAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        String[] howToDrinkItems = {"雪冷え", "花冷え", "涼冷え", "冷や", "日向燗", "人肌燗", "ぬる燗", "上燗", "熱燗", "飛び切り燗"};
-        for (String howToDrinkItem : howToDrinkItems) howToDrinkAdapter.add(howToDrinkItem);
-        howToDrinkSpinner.setAdapter(howToDrinkAdapter);
+        for (String howToDrinkItem : mHowToDrinkItems) howToDrinkAdapter.add(howToDrinkItem);
+        mHowToDrinkSpinner.setAdapter(howToDrinkAdapter);
 
         /*
           五味データ設定
@@ -256,8 +257,22 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         mBrandLiveData.observe(getViewLifecycleOwner(), brand -> {
             mTitle.setText(brand.getTitle());
             mSubTitle.setText(brand.getSubtitle());
+            for (int i = 0; i < mSpecificItems.length; i++) {
+                if (mSpecificItems[i] == brand.getSpecific()) mSpecificSpinner.setSelection(i);
+            }
             mPolishingRate.setText(brand.getPolishingRate().toString());
-            // TODO:ここに追加していく
+            mBrewery.setText(brand.getBrewery());
+            mArea.setText(brand.getArea());
+            mRawMaterial.setText(brand.getRawMaterial());
+            mCapacity.setText(brand.getCapacity().toString());
+            mStorageTemperature.setText(brand.getStorageTemperature().toString());
+            for (int i = 0; i < mHowToDrinkItems.length; i++) {
+                if (mHowToDrinkItems[i] == brand.getHowToDrink()) mHowToDrinkSpinner.setSelection(i);
+            }
+            for (Long taste : brand.getTasteList()) {
+                mTasteEntryList.add(new RadarEntry(taste));
+            }
+            mRadarChartItem.setRadarData(mTasteEntryList);
             for (Aroma aroma : brand.getAromaList()) {
                 mAromaEntryList.add(new Entry(aroma.getElapsedCount(), aroma.getAromaLevel(), aroma.getElapsedDate()));
             }
@@ -287,12 +302,23 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
     public void confirmEditData() {
         String title = mTitle.getText().toString();
         String subTitle = mSubTitle.getText().toString();
+        String specific = mSpecificSpinner.getSelectedItem().toString();
         Long polishingRate = Long.parseLong(mPolishingRate.getText().toString());
+        String brewery = mBrewery.getText().toString();
+        String area = mArea.getText().toString();
+        String rawMaterial = mRawMaterial.getText().toString();
+        Long capacity = Long.parseLong(mCapacity.getText().toString());
+        Long storageTemperature = Long.parseLong(mStorageTemperature.getText().toString());
+        String howToDrink = mHowToDrinkSpinner.getSelectedItem().toString();
+        List<Long> tasteList = new ArrayList<>();
+        for (RadarEntry entry : mTasteEntryList) {
+            tasteList.add((long) entry.getY());
+        }
         List<Aroma> aromaList = new ArrayList<>();
         for (Entry entry : mAromaEntryList) {
             aromaList.add(new Aroma((long)entry.getX(), (long)entry.getY(), (Date)entry.getData()));
         }
-        Brand brand = new Brand(title, subTitle, polishingRate, aromaList);
+        Brand brand = new Brand(title, subTitle, specific, polishingRate, brewery, area, rawMaterial, capacity, storageTemperature, howToDrink, tasteList, aromaList);
         mItemDetailViewModel.updateBrand(mSelectBrandId, brand);
     }
 }
