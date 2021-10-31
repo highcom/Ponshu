@@ -29,18 +29,18 @@ public class Brand {
                  String howToDrink,
                  List<Long> tasteList,
                  List<Aroma> aromaList) {
-        this.title = title;
-        this.subtitle = subtitle;
-        this.specific = specific;
-        this.polishingRate = polishingRate;
-        this.brewery = brewery;
-        this.area = area;
-        this.rawMaterial = rawMaterial;
-        this.capacity = capacity;
-        this.storageTemperature = storageTemperature;
-        this.howToDrink = howToDrink;
-        this.tasteList = tasteList;
-        this.aromaList = aromaList;
+        this.title = title != null ? title : "";
+        this.subtitle = subtitle != null ? subtitle : "";
+        this.specific = specific != null ? specific : "";
+        this.polishingRate = polishingRate != null ? polishingRate : 0;
+        this.brewery = brewery != null ? brewery : "";
+        this.area = area != null ? area : "";
+        this.rawMaterial = rawMaterial != null ? rawMaterial : "";
+        this.capacity = capacity != null ? capacity : 0L;
+        this.storageTemperature = storageTemperature != null ? storageTemperature : 0L;
+        this.howToDrink = howToDrink != null ? howToDrink : "";
+        this.tasteList = tasteList != null ? tasteList : new ArrayList<>();
+        this.aromaList = aromaList != null ? aromaList : new ArrayList<>();
     }
 
     public Brand() {
