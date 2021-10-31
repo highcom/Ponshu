@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:id="@+id/detail_title"
-            android:text="日本酒"
+            android:hint="銘柄名"
             android:textSize="24dp"
             android:background="@color/offwhite"
             android:layout_marginTop="4dp"
@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:id="@+id/detail_subtitle"
-            android:text="サブ銘柄名"
+            android:hint="サブ銘柄名"
             android:textSize="18dp"
             android:background="@color/offwhite"
             android:layout_marginTop="4dp"
@@ -92,7 +92,7 @@
                 android:layout_height="50dp"
                 android:id="@+id/detail_polishing_rate"
                 android:layout_weight="2"
-                android:text="60"
+                android:hint="60"
                 android:inputType="number"/>
 
         </LinearLayout>
@@ -120,7 +120,7 @@
                 android:layout_height="50dp"
                 android:id="@+id/detail_brewery"
                 android:layout_weight="2"
-                android:text="酒蔵名"
+                android:hint="酒蔵名"
                 android:inputType="text"/>
 
         </LinearLayout>
@@ -148,7 +148,7 @@
                 android:layout_height="50dp"
                 android:id="@+id/detail_area"
                 android:layout_weight="2"
-                android:text="県名"
+                android:hint="県名"
                 android:inputType="text"/>
 
         </LinearLayout>
@@ -176,7 +176,7 @@
                 android:layout_height="50dp"
                 android:id="@+id/detail_raw_material"
                 android:layout_weight="2"
-                android:text="米名称"
+                android:hint="米名称"
                 android:inputType="text"/>
 
         </LinearLayout>
@@ -204,7 +204,7 @@
                 android:layout_height="50dp"
                 android:id="@+id/detail_capacity"
                 android:layout_weight="2"
-                android:text="720"
+                android:hint="720"
                 android:inputType="number"/>
 
         </LinearLayout>
@@ -232,7 +232,7 @@
                 android:layout_height="50dp"
                 android:id="@+id/detail_storage_temperature"
                 android:layout_weight="2"
-                android:text="14"
+                android:hint="14"
                 android:inputType="number"/>
 
         </LinearLayout>
