@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Filter;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -89,7 +90,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 public boolean onMenuItemClick(MenuItem item) {
                     Object fragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
                     if (fragment instanceof ItemDetailFragment) {
-                        ((ItemDetailFragment)fragment).confirmEditData();
+                        boolean result = ((ItemDetailFragment)fragment).confirmEditData();
+                        if (result) {
+                            getSupportFragmentManager().beginTransaction().remove((ItemDetailFragment)fragment).commit();
+                            setMenuType(MENU_TYPE.SEARCH_TITLE);
+                            invalidateOptionsMenu();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "銘柄名の入力は必須です", Toast.LENGTH_SHORT).show();
+                        }
                     }
                     return false;
                 }
@@ -122,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public boolean onQueryTextChange(String newText) {
         if (mSearchListFragment == null) {
             setMenuType(MENU_TYPE.SEARCH_TITLE);
+            invalidateOptionsMenu();
             mSearchListFragment = new SearchListFragment(mCollector.getBrandsList(), this);
             getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
         }

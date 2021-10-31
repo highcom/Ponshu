@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:id="@+id/detail_edit_title"
-            android:text="日本酒"
+            android:hint="名称"
             android:textSize="24dp"
             android:background="@color/offwhite"
             android:visibility="gone"

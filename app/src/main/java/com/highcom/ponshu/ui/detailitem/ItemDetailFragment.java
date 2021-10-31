@@ -36,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnDateSetListener, View.OnClickListener {
 
@@ -103,7 +104,6 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
                         getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
                         mTitle.setText(name);
                     });
-            mSearchListFragment.setTitle(mTitle.getText().toString());
             getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
         });
 
@@ -137,7 +137,6 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
                         getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
                         mBrewery.setText(name);
                     });
-            mSearchListFragment.setTitle(mTitle.getText().toString());
             getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
         });
 
@@ -152,7 +151,6 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
                         getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
                         mArea.setText(name);
                     });
-            mSearchListFragment.setTitle(mTitle.getText().toString());
             getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
         });
 
@@ -299,8 +297,10 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
      *
      * Toobarのチェックボタンを押下時に呼ばれる
      */
-    public void confirmEditData() {
+    public boolean confirmEditData() {
         String title = mTitle.getText().toString();
+        // 銘柄名は入力必須項目とする
+        if (Objects.equals(title, "")) return false;
         String subTitle = mSubTitle.getText().toString();
         String specific = mSpecificSpinner.getSelectedItem().toString();
         Long polishingRate = Long.parseLong(mPolishingRate.getText().toString());
@@ -320,5 +320,6 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         }
         Brand brand = new Brand(title, subTitle, specific, polishingRate, brewery, area, rawMaterial, capacity, storageTemperature, howToDrink, tasteList, aromaList);
         mItemDetailViewModel.updateBrand(mSelectBrandId, brand);
+        return true;
     }
 }
