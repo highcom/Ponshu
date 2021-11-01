@@ -3,6 +3,7 @@ package com.highcom.ponshu.ui.detailitem;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,14 +98,19 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
           タイトルデータ設定
          */
         mTitle = binding.detailTitle;
-        mTitle.setOnClickListener(v -> {
-            // 銘柄一覧を表示する
-            mSearchListFragment = new SearchListFragment(SakenowaDataCollector.getInstance().getBrandsList(), mTitle.getText().toString(), true,
-                    name -> {
-                        getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
-                        mTitle.setText(name);
-                    });
-            getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
+        mTitle.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    // 銘柄一覧を表示する
+                    mSearchListFragment = new SearchListFragment(SakenowaDataCollector.getInstance().getBrandsList(), mTitle.getText().toString(), true,
+                            name -> {
+                                getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
+                                mTitle.setText(name);
+                            });
+                    getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
+                }
+            }
         });
 
         /**
@@ -130,28 +136,32 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
          * 酒造名データ設定
          */
         mBrewery = binding.detailBrewery;
-        mBrewery.setOnClickListener(v -> {
-            // 酒蔵一覧を表示する
-            mSearchListFragment = new SearchListFragment(SakenowaDataCollector.getInstance().getBreweryList(), mBrewery.getText().toString(), true,
-                    name -> {
-                        getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
-                        mBrewery.setText(name);
-                    });
-            getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
+        mBrewery.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                // 酒蔵一覧を表示する
+                mSearchListFragment = new SearchListFragment(SakenowaDataCollector.getInstance().getBreweryList(), mBrewery.getText().toString(), true,
+                        name -> {
+                            getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
+                            mBrewery.setText(name);
+                        });
+                getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
+            }
         });
 
         /*
           産地データ設定
          */
         mArea = binding.detailArea;
-        mArea.setOnClickListener(v -> {
-            // 地域一覧を表示する
-            mSearchListFragment = new SearchListFragment(SakenowaDataCollector.getInstance().getAreaList(), mArea.getText().toString(), true,
-                    name -> {
-                        getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
-                        mArea.setText(name);
-                    });
-            getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
+        mArea.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                // 地域一覧を表示する
+                mSearchListFragment = new SearchListFragment(SakenowaDataCollector.getInstance().getAreaList(), mArea.getText().toString(), true,
+                        name -> {
+                            getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
+                            mArea.setText(name);
+                        });
+                getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
+            }
         });
 
         /*
