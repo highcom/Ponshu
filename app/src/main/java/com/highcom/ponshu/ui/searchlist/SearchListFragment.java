@@ -67,6 +67,9 @@ public class SearchListFragment extends Fragment implements Filterable {
             mTitleEditText = getActivity().findViewById(R.id.detail_edit_title);
             mTitleEditText.setVisibility(View.VISIBLE);
             mTitleEditText.setText(mTitle);
+            mTitleEditText.setFocusable(true);
+            mTitleEditText.setFocusableInTouchMode(true);
+            mTitleEditText.requestFocus();
             mTitleEditText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {

@@ -2,11 +2,13 @@ package com.highcom.ponshu.ui.detailitem;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -107,6 +109,9 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
                             name -> {
                                 getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
                                 mTitle.setText(name);
+                                // キーボードを閉じる
+                                InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                inputMethodManager.hideSoftInputFromWindow(getView().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                             });
                     getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
                 }
@@ -143,6 +148,9 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
                         name -> {
                             getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
                             mBrewery.setText(name);
+                            // キーボードを閉じる
+                            InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            inputMethodManager.hideSoftInputFromWindow(getView().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                         });
                 getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
             }
@@ -159,6 +167,9 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
                         name -> {
                             getActivity().getSupportFragmentManager().beginTransaction().remove(mSearchListFragment).commit();
                             mArea.setText(name);
+                            // キーボードを閉じる
+                            InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            inputMethodManager.hideSoftInputFromWindow(getView().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                         });
                 getActivity().getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment_activity_main, mSearchListFragment).commit();
             }
