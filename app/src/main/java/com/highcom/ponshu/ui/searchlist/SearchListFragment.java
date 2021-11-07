@@ -1,5 +1,6 @@
 package com.highcom.ponshu.ui.searchlist;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -31,13 +33,16 @@ public class SearchListFragment extends Fragment implements Filterable {
     private boolean mEditTitleVisible;
     private SearchListFragmentListener mListener;
     private EditText mTitleEditText;
+    private boolean mTitleFirstFocusable;
     private ListView mListView;
     private ArrayAdapter<String> mArrayAdapter;
     private List<String> mBrandsList;
     private List<String> orig;
+
     public SearchListFragment(List<String> brandsList, SearchListFragmentListener listener) {
         mTitle = null;
         mEditTitleVisible = false;
+        mTitleFirstFocusable = false;
         mBrandsList = brandsList;
         mListener = listener;
     }
@@ -45,6 +50,7 @@ public class SearchListFragment extends Fragment implements Filterable {
     public SearchListFragment(List<String> brandsList, String title, boolean visible, SearchListFragmentListener listener) {
         mTitle = title;
         mEditTitleVisible = visible;
+        mTitleFirstFocusable = false;
         mBrandsList = brandsList;
         mListener = listener;
     }
@@ -89,6 +95,20 @@ public class SearchListFragment extends Fragment implements Filterable {
                 @Override
                 public void afterTextChanged(Editable s) {
 
+                }
+            });
+            mTitleEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        mTitleFirstFocusable = true;
+                    } else if (mTitleFirstFocusable && !hasFocus) {
+                        // 内容編集中にフォーカスが外れた場合は、キーボードを閉じる
+                        InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(getView().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                        mListener.onAdapterClicked(mTitleEditText.getText().toString());
+                        mTitleFirstFocusable = false;
+                    }
                 }
             });
         }
