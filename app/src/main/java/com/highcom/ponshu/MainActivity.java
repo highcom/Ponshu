@@ -108,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     public void setSearchWordFilter(String searchWord) {
+        if (mSearchListFragment == null) return;
+
         Filter filter = mSearchListFragment.getFilter();
         if (TextUtils.isEmpty(searchWord)) {
             filter.filter(null);
@@ -128,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        if (mSearchListFragment == null) {
+        if (mSearchListFragment == null && !newText.equals("")) {
             setMenuType(MENU_TYPE.SEARCH_TITLE);
             invalidateOptionsMenu();
             mSearchListFragment = new SearchListFragment(mCollector.getBrandsList(), this);
