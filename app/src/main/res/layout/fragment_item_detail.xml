@@ -363,7 +363,7 @@
                         android:layout_height="45dp"
                         android:id="@+id/detail_astringent_title"
                         android:gravity="center_vertical"
-                        android:text="苦味" />
+                        android:text="渋味" />
 
                     <Spinner
                         android:layout_width="wrap_content"

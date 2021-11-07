@@ -92,10 +92,10 @@ public class RadarChartItem {
      */
     public void setRadarData(List<RadarEntry> values) {
 
-        float mul = 80;
-        float min = 20;
-        int cnt = 5;
-
+//        float mul = 80;
+//        float min = 20;
+//        int cnt = 5;
+//
 //        ArrayList<RadarEntry> entries1 = new ArrayList<>();
 //        ArrayList<RadarEntry> entries2 = new ArrayList<>();
 //

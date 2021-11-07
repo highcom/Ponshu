@@ -218,15 +218,14 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         }
 
         Button registTasteButton = binding.detailTasteRegister;
-        registTasteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (Spinner tasteSpinner : tastesSpinner) {
-                    float val = Float.parseFloat(tasteSpinner.getSelectedItem().toString());
-                    mTasteEntryList.add(new RadarEntry(val));
-                }
-                mRadarChartItem.setRadarData(mTasteEntryList);
+        registTasteButton.setOnClickListener(v -> {
+            mTasteEntryList.clear();
+            for (Spinner tasteSpinner : tastesSpinner) {
+                float val = Float.parseFloat(tasteSpinner.getSelectedItem().toString()) * 20;
+                mTasteEntryList.add(new RadarEntry(val));
             }
+            mRadarChartItem.setRadarData(mTasteEntryList);
+            mRadarChartItem.updateRadarChart();
         });
 
         /*
@@ -249,23 +248,20 @@ public class ItemDetailFragment extends Fragment implements DatePickerDialog.OnD
         aromaSpinner.setAdapter(aromaAdapter);
 
         Button registAromaButton = binding.detailAromaRegister;
-        registAromaButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                float x;
-                // 登録初日からの経過日数を求める
-                if (mAromaEntryList.size() > 0) {
-                    long baseX = ((Date)mAromaEntryList.get(0).getData()).getTime() / (1000 * 60 * 60 * 24);
-                    long currentX = mSelectDate.getTime() / (1000 * 60 * 60 * 24);
-                    x = currentX - baseX;
-                } else {
-                    x = 0;
-                }
-                float y = Float.parseFloat(aromaSpinner.getSelectedItem().toString());
-                mAromaEntryList.add(new Entry(x, y, mSelectDate));
-                mLineChartItem.setLineData(mAromaEntryList);
-                mLineChartItem.updateLineChart();
+        registAromaButton.setOnClickListener(v -> {
+            float x;
+            // 登録初日からの経過日数を求める
+            if (mAromaEntryList.size() > 0) {
+                long baseX = ((Date)mAromaEntryList.get(0).getData()).getTime() / (1000 * 60 * 60 * 24);
+                long currentX = mSelectDate.getTime() / (1000 * 60 * 60 * 24);
+                x = currentX - baseX;
+            } else {
+                x = 0;
             }
+            float y = Float.parseFloat(aromaSpinner.getSelectedItem().toString());
+            mAromaEntryList.add(new Entry(x, y, mSelectDate));
+            mLineChartItem.setLineData(mAromaEntryList);
+            mLineChartItem.updateLineChart();
         });
 
         /*
