@@ -11,29 +11,30 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.highcom.ponshu.R;
 import com.highcom.ponshu.databinding.FragmentTimelineBinding;
+import com.highcom.ponshu.ui.detailitem.ItemDetailFragment;
 
-public class TimelineFragment extends Fragment {
+public class TimelineFragment extends Fragment implements TimelineListAdapter.TimelineListAdapterListener {
 
-    private TimelineViewModel dashboardViewModel;
+    private TimelineViewModel timelineViewModel;
     private FragmentTimelineBinding binding;
+    private TimelineListAdapter timelineListAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel =
-                new ViewModelProvider(this).get(TimelineViewModel.class);
+        timelineViewModel = new ViewModelProvider(this).get(TimelineViewModel.class);
 
         binding = FragmentTimelineBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textDashboard;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+        timelineListAdapter = new TimelineListAdapter(new TimelineListAdapter.TimelineDiff(), this);
+        binding.tilelineListView.setAdapter(timelineListAdapter);
+        binding.tilelineListView.setLayoutManager(new LinearLayoutManager(getContext()));
+        timelineViewModel.getBrandIdentifierList().observe(getViewLifecycleOwner(), brandIdentifiers -> timelineListAdapter.submitList(brandIdentifiers));
         return root;
     }
 
@@ -41,5 +42,14 @@ public class TimelineFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onAdapterClicked(String id) {
+        ItemDetailFragment fragment = new ItemDetailFragment();
+        Bundle args = new Bundle();
+        args.putString("BRAND_ID", id);
+        fragment.setArguments(args);
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_activity_main, fragment).commit();
     }
 }

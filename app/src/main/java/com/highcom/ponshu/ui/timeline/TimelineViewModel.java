@@ -1,19 +1,25 @@
 package com.highcom.ponshu.ui.timeline;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-public class TimelineViewModel extends ViewModel {
+import com.highcom.ponshu.datamodel.BrandIdentifier;
+import com.highcom.ponshu.datamodel.PonshuRepository;
 
-    private MutableLiveData<String> mText;
+import java.util.List;
 
-    public TimelineViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is dashboard fragment");
+public class TimelineViewModel extends AndroidViewModel {
+    private PonshuRepository mRepository;
+
+    public TimelineViewModel(@NonNull Application application) {
+        super(application);
+        mRepository = PonshuRepository.getInstance();
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public LiveData<List<BrandIdentifier>> getBrandIdentifierList() {
+        return mRepository.getBrandIdentifierList();
     }
 }
